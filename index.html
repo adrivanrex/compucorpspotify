@@ -1,0 +1,232 @@
+<!doctype html>
+<html ng-app="SpotifyApp">
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular.min.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet'>
+    <style>
+        body {
+            background-color: #c4506d;
+            font-family: 'Inconsolata';
+            font-size: 22px;
+        }
+
+        button {
+            font-family: 'Inconsolata';
+            font-size: 22px;
+            color: white;
+        }
+
+        .button {
+            color: white;
+        }
+
+        div.gl-logo img {
+            width: 100px;
+            height: auto;
+        }
+
+        div.hero-img img {
+            width: 420px;
+            height: auto;
+        }
+
+        div.hero-img {
+            display: table;
+            margin: 0 auto;
+        }
+
+        div.page-one {
+            display: table;
+            margin: 0 auto;
+        }
+
+        div.sub-header {
+            background-color: black;
+        }
+
+        div.search-form {
+            display: table;
+            margin: 0 auto;
+            padding-top: 20px;
+            padding: 20px;
+        }
+
+        input {
+            -webkit-border-radius: 50px;
+            -moz-border-radius: 50px;
+            border-radius: 50px;
+        }
+
+        input[type=text] {
+            border-radius: 20px;
+        }
+
+        input.search-artist {
+            width: 620px;
+            height: 40px;
+        }
+
+        input.search-artist-submit {
+            margin-left: -95px;
+            background-color: #c4506d;
+            padding: 10px;
+            color: white;
+        }
+
+        div.response-body {
+            padding: 20px;
+            display: table;
+            margin: 0 auto;
+        }
+
+        div.response-paragraph {
+            display: table;
+            margin: 0 auto;
+            color: white;
+        }
+
+        img.response-image {
+            height: 150px;
+            display: table;
+            margin: 0 auto;
+        }
+
+        div.body-content {
+            background-color: #222223;
+        }
+
+        div.gallery {
+            float: left;
+            width: 180px;
+        }
+
+        div.gallery img {
+            width: 100%;
+            height: auto;
+            margin-top: 20px;
+        }
+
+        div.gallery {
+            padding: 20px;
+        }
+
+        div.desc {
+			background-color: white;
+            padding: 10px;
+            margin-top: -5px;
+        }
+
+        ::-webkit-input-placeholder {
+            text-align: center;
+        }
+
+        :-moz-placeholder {
+            /* Firefox 18- */
+            text-align: center;
+        }
+
+        ::-moz-placeholder {
+            /* Firefox 19+ */
+            text-align: center;
+        }
+
+        :-ms-input-placeholder {
+            text-align: center;
+        }
+
+        div.response-album {
+            background-color: black;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content" ng-controller="mainCtrl">
+        <div class="gl-logo">
+            <img src="https://bytebucket.org/compucorp/recruitment-music-search/raw/c371adbb3b828b0a0bc1fb8bab9bd5035d43dfd9/Assets/Images/gl-logo%402x.png">
+        </div>
+        <div class="hero-img">
+            <img src="https://bytebucket.org/compucorp/recruitment-music-search/raw/c371adbb3b828b0a0bc1fb8bab9bd5035d43dfd9/Assets/Images/hero-img%402x.png">
+        </div>
+        <div class="page-one">
+            <img src="https://bytebucket.org/compucorp/recruitment-music-search/raw/c371adbb3b828b0a0bc1fb8bab9bd5035d43dfd9/Assets/Images/Page%201%402x.png">
+        </div>
+        <div class="sub-header">
+            <div class="search-form">
+                <form ng-submit="submit()">
+                    <input class="search-artist" type="text" ng-model="text" name="text" placeholder="Search for Artist" />
+                    <input class="search-artist-submit" type="submit" id="submit" value="SEARCH" />
+                </form>
+            </div>
+        </div>
+        <div class="body-content">
+            
+            <div class="response-body">
+				<div class="response-notification" ng-hide="showTheForm">
+               <img class="response-image" src="https://bytebucket.org/compucorp/recruitment-music-search/raw/c371adbb3b828b0a0bc1fb8bab9bd5035d43dfd9/Assets/Images/Magnify%402x.png"></img>
+               <div class="response-paragraph">
+                  <p>Your results will appear here</p>
+				  </div>
+				  </div>
+				  
+				  <div class="response-album">
+                <div class="gallery-content">
+                    <div class="gallery" ng-repeat="galleryID in galleryID">
+                        <div ng-click="clickEvent($event)" id="{{galleryID.id}}">
+                            <img src="{{galleryID.images[0].url}}">
+                            <div class="desc">{{galleryID.name}}</div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+               </div>
+            </div>
+            
+
+            
+        </div>
+    </div>
+
+
+    <script>
+        angular.module('SpotifyApp', [])
+            .controller('mainCtrl', ['$scope', '$http', function($scope, $http) {
+
+                $scope.clickEvent = function(obj) {
+                    console.log(obj.path[1].id);
+                };
+
+                $scope.Search = 'Lorem Ipsum';
+                $scope.submit = function() {
+                    console.log(this.text);
+                    searchTerm = this.text;
+					$scope.showTheForm = true;
+
+
+
+                    $http({
+                        method: 'GET',
+                        url: 'https://api.spotify.com/v1/search?q=' + searchTerm + '&type=artist'
+                    }).then(function successCallback(response) {
+                        // this callback will be called asynchronously
+                        // when the response is available
+                        galleryList = response.data;
+                        galleryID = response.data.artists.items;
+                        console.log(galleryID);
+                        $scope.galleryID = galleryID;
+
+
+                    }, function errorCallback(response) {
+                        // called asynchronously if an error occurs
+                        // or server returns response with an error status.
+                    });
+                };
+            }]);
+    </script>
+</body>
+
+</html>
